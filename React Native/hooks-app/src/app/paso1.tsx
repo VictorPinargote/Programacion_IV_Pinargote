@@ -5,14 +5,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 export function Paso1() {
   const [intentos, setIntentos] = useState<number>(0)
   const [conectado, setConectado] = useState<boolean>(false)
-  const [mensajeError, setMensajeError ] = useState<string>('')
+  const [mensajeError, setMensajeError] = useState<string>('')
 
   function manejarReintento() {
     if (conectado) return
     const nuevoIntento = intentos + 1
     setIntentos(nuevoIntento)
     // Simula éxito al tercer intento
-    if (nuevoIntento >= 4) {
+    if (nuevoIntento >= 3) {
       setConectado(true)
     }
   }
@@ -24,7 +24,7 @@ export function Paso1() {
 
   const estadoTexto = conectado
     ? '✓ Conectado a redis-01'
-    : `Intento ${intentos} de 4 fallido`
+    : `Intento ${intentos} de 3 fallido`
 
   const colorEstado = conectado ? '#2e7d32' : '#c62828'
 
@@ -38,8 +38,7 @@ export function Paso1() {
         </Text>
         <Text style={styles.detalle}>redis-01 · 10.0.2.20:6379</Text>
       </View>
-      <Text style={styles.detalle}>{
-        intentos > 0 && !conectado ? 'Error en Conexión': ''}</Text>
+      <Text style={[styles.detalle, {color: colorEstado}]}>{intentos > 0 && !conectado ? 'Error en conexion':''}</Text>
 
       <Pressable
         style={({ pressed }) => [
