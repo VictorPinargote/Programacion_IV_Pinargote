@@ -1,25 +1,31 @@
 // app/index.tsx — agrega la función Paso3
-import { useRef, useState, useEffect, ComponentRef } from 'react'
+import type { ComponentRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  StyleSheet, Text, TextInput, View, Pressable
+    Pressable, TextInput as RNTextInput,
+    StyleSheet, Text, TextInput, View
 } from 'react-native'
 
 export function Paso3() {
-  const inputHostRef = useRef<ComponentRef<typeof TextInput>>(null)
-  const inputPuertoRef = useRef<ComponentRef<typeof TextInput>>(null)
+  // ── Uso 1: referencia a un TextInput para foco programático ─────────
+  const inputHostRef = useRef<ComponentRef<typeof RNTextInput>>(null)
+  const inputPuertoRef = useRef<ComponentRef<typeof RNTextInput>>(null)
 
   const [host, setHost] = useState<string>('')
   const [puerto, setPuerto] = useState<string>('22')
 
+  // Foco automático al montar la pantalla
   useEffect(() => {
     inputHostRef.current?.focus()
   }, [])
 
+  // ── Uso 2: contador de intentos silencioso (sin re-render) ───────────
   const intentosSilenciosRef = useRef<number>(0)
   const [ultimaConexion, setUltimaConexion] = useState<string>('—')
 
   function intentarConexion() {
-    intentosSilenciosRef.current += 1
+    intentosSilenciosRef.current += 1   // muta sin re-render
+    // Solo actualizamos el estado (y disparamos re-render) al conectar
     setUltimaConexion(
       `${host || 'servidor'}:${puerto} — intento #${intentosSilenciosRef.current}`
     )
@@ -84,12 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  formulario: {
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
   tarjeta: {
     alignItems: 'center',
     padding: 24,
@@ -99,18 +99,18 @@ const styles = StyleSheet.create({
   },
   etiqueta: {
     marginBottom: 12,
-    fontSize: 18,
     fontWeight: 'bold',
+    color: '#757575',
+    fontSize: 13
   },
   input: {
     marginBottom: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#ccc',
     borderRadius: 8,
+    backgroundColor: '#fff',
     fontSize: 16,
-    backgroundColor: '#fafafa',
   },
   latencia: {
     marginBottom: 10,
@@ -122,8 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   detalle: {
-    color: '#757575',
-    fontSize: 13,
+    
   },
   boton: {
     alignItems: 'center',
@@ -132,9 +131,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   botonActivo: {
-    backgroundColor: '#1976d2',
-  },
-  botonIniciar: {
     backgroundColor: '#2e7d32',
   },
   botonDetener: {
@@ -145,4 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  formulario: {
+    padding:14
+  }
 })

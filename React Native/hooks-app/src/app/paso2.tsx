@@ -1,6 +1,6 @@
 // app/index.tsx — agrega la función Paso2
-import { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { useEffect, useState } from 'react'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 type EstadoPing = 'pinging' | 'ok' | 'timeout' | 'inactivo'
 
@@ -24,7 +24,7 @@ export function Paso2() {
         if (falla) {
           setLatencia(null)
           setEstado('timeout')
-          setPaquetesPerdidos(paquetes => paquetes + 1)
+          setPaquetesPerdidos(p => p + 1)
         } else {
           const ms = Math.floor(Math.random() * 190) + 10
           setLatencia(ms)
@@ -56,10 +56,10 @@ export function Paso2() {
         <Text style={styles.latencia}>
           {latencia !== null ? `${latencia} ms` : '— ms'}
         </Text>
-        <Text style={styles.latencia}>
-          {estado === 'timeout' ? (paquetesPerdidos / ciclos * 100).toFixed(1) + '%' : '—'}
-        </Text>
         <Text style={styles.ciclos}>Ciclos completados: {ciclos}</Text>
+        <Text style={styles.ciclos}>
+          Paquetes perdidos: {(paquetesPerdidos / ciclos * 100).toFixed(1) + '%'}
+        </Text>
         <Text style={styles.detalle}>nginx-01 · 10.0.2.30 · Puerto 80</Text>
       </View>
 
@@ -135,4 +135,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 })
-
