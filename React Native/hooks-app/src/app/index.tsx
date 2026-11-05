@@ -1,35 +1,48 @@
 // app/index.tsx
-import { View, Text } from 'react-native'
-import { Paso1 } from './paso1'
-import { Paso2 } from './paso2'
-import { Paso3 } from './paso3'
-import { Paso3Suma } from './paso3suma'
-import { Paso4 } from './paso4'
-
+import { Text, View } from 'react-native'
+import { Paso1_mp } from './paso1_mp_varas_hernan'
+import { Paso2_mp } from './paso2_mp_varas_hernan'
+import { Paso3_mp } from './paso3_mp_varas_hernan'
+import { Paso3Sumar_mp } from './paso3Sumar_mp_varas_hernan'
+import { Paso4_mp } from './paso4_mp_varas_hernan'
+import Paso5 from './paso5'
+import Paso6 from './paso6'
+import Paso7 from './paso7'
+import { Paso8 } from './paso8'
+import { Paso9, TarjetaServidor } from './paso8TarjetaServidor'
 
 // ┌──────────────────────────────────────────────────────────────────┐
 // │  Cambia este número y guarda (Ctrl+S) para navegar entre pasos. │
-// │  1  Paso 1  useState — contador de reintentos                    │
-// │  2  Paso 2  useEffect — ping periódico con setInterval           │
-// │  3  Paso 3  useRef — foco en TextInput y contador sin re-render  │
-// │  4  Paso 4  Hooks nativos de RN — dimensiones, esquema de color  │
-// │  5  Paso 5  Custom hook — useConexionSimulada                    │
-// │  6  Paso 6  Ejemplo combinado — pantalla de estado del servidor  │
+// │  1   Paso 1  useState — contador de intentos de contacto        │
+// │  2   Paso 2  useEffect — monitor de radio con setInterval       │
+// │  3   Paso 3  useRef — foco en TextInput y contador sin re-render│
+// │  33  Paso 3  Sumar evidencias (useRef)                          │
+// │  4   Paso 4  Hooks nativos de RN — dimensiones, esquema de color│
 // └──────────────────────────────────────────────────────────────────┘
-const PASO = 4
+const PASO: number = 9
 
 export default function Index() {
   switch (PASO) {
-    case 1: 
-      return <Paso1 />
-    case 2: 
-      return <Paso2 /> 
-    case 3: 
-      return <Paso3 />
-    case 7: 
-      return <Paso3Suma />
-    case 4: 
-      return <Paso4 />
+    case 1:
+      return <Paso1_mp />
+    case 2:
+      return <Paso2_mp />
+    case 3:
+      return <Paso3_mp />
+    case 33:
+      return <Paso3Sumar_mp />
+    case 4:
+      return <Paso4_mp />
+    case 5:
+      return <Paso5 />
+    case 6:
+      return <Paso6 />  
+    case 7:
+      return <Paso7 />  
+    case 8:
+      return <Paso8 />    
+    case 9:
+      return <Paso9 />     
     default:
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

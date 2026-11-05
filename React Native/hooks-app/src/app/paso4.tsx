@@ -1,6 +1,5 @@
 // app/index.tsx — agrega la función Paso4
-import { useWindowDimensions, useColorScheme } from 'react-native'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, useColorScheme, useWindowDimensions, View } from 'react-native'
 
 export function Paso4() {
   const { width, height, scale, fontScale } = useWindowDimensions()
@@ -99,12 +98,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  formulario: {
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
   tarjeta: {
     alignItems: 'center',
     padding: 24,
@@ -112,44 +105,40 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 2,
   },
+  
   etiqueta: {
     marginBottom: 12,
-    fontSize: 18,
     fontWeight: 'bold',
+    color: '#757575',
+    fontSize: 13
   },
+   nota: {
+    alignItems: 'center',
+    padding: 24,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    elevation: 2,
+   }, 
   input: {
     marginBottom: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#ccc',
     borderRadius: 8,
+    backgroundColor: '#fff',
     fontSize: 16,
-    backgroundColor: '#fafafa',
   },
-  nombreServidor: {
+  notaTexto: {
     marginBottom: 10,
-    fontSize: 9,
+    fontSize: 36,
     fontWeight: 'bold',
   },
-  ipServidor: {
+  ciclos: {
     marginBottom: 8,
     fontSize: 14,
   },
   detalle: {
-    color: '#757575',
-    fontSize: 13,
-  },
-  nota: {
-    alignItems: 'center',
-    padding: 1,
-    borderRadius: 1,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
-  notaTexto: {
-    marginBottom: 8,
-    fontSize: 14,
+    
   },
   boton: {
     alignItems: 'center',
@@ -158,9 +147,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   botonActivo: {
-    backgroundColor: '#1976d2',
-  },
-  botonIniciar: {
     backgroundColor: '#2e7d32',
   },
   botonDetener: {
@@ -171,4 +157,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  nombreServidor: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  ipServidor: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  formulario: {
+    padding:14
+  }
 })
