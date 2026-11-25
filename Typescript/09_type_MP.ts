@@ -1,45 +1,33 @@
-type ID= string | number;
-type Apellido = string;
-type Coordenadas = [number, number];
-type Punto = {
-    x: number;
-    y: number;
-};
+type NivelCurso = "Basico" | "Intermedio" | "Avanzado";
+type MetodoPago = "Tarjeta" | "Transferencia" | "Efectivo";
 
-const origen: Punto = { x: 0, y: 0 };
-const id: ID = 42;
-const id2: ID = 'usr-001';
-
-interface Usuario {
-    readonly id: ID;
+type Curso = {
+    id: number;
     nombre: string;
-    email: string;
-    avatar?: string;
-}
+    precio: number;
+    nivel: NivelCurso;
+    disponible: boolean;
+};
 
-interface Empleado extends Usuario {
-    cargo: string;
-}
+type Compra = {
+    estudiante: string;
+    curso: Curso;
+    pago: MetodoPago;
+};
 
-const u: Usuario = {
+const curso1: Curso = {
     id: 1,
-    nombre: 'Ana',
-    email: 'ana@gmail.com'
+    nombre: "Logica de Programacion",
+    precio: 25,
+    nivel: "Basico",
+    disponible: true
 };
 
-const u2: Usuario = {
-    id: 2,
-    nombre: 'Luis',
-    email: 'luis@gmail.com',
-    avatar: 'avatar.png'
+const compra1: Compra = {
+    estudiante: "Joel Pinargote",
+    curso: curso1,
+    pago: "Transferencia"
 };
 
-console.log(u);
-console.log(u2);
-
-const docente: Empleado = {
-    id: 3,
-    nombre: 'Pedro',
-    email: 'pedro@ute.edu',
-    cargo: 'Docente'
-};
+console.log("Curso:", curso1);
+console.log("Detalle de compra:", compra1);

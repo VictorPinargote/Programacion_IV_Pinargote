@@ -1,53 +1,29 @@
-class Boxeador {
-    atacar(): void {
-        console.log("Atacque basico");
+interface Vendible {
+    readonly titulo: string;
+    obtenerPrecioFinal(): number;
+}
+
+interface Certificable {
+    emitirCertificado(estudiante: string): string;
+}
+
+class CursoEnVivo implements Vendible, Certificable {
+    constructor(
+        public readonly titulo: string,
+        private precioBase: number,
+        private cuposDisponibles: number
+    ) {}
+
+    obtenerPrecioFinal(): number {
+        return this.cuposDisponibles > 0 ? this.precioBase : 0;
+    }
+
+    emitirCertificado(estudiante: string): string {
+        return `Certificado emitido a ${estudiante} por completar ${this.titulo}`;
     }
 }
-class Rocky extends Boxeador{
-    override atacar(): void{
-        console.log("Rocky ataca con fuerza")
 
-    }
-}
-
-
-
-class Apollo extends Boxeador{
-    override atacar(): void{
-        console.log("Apollo ataca con velocidad");
-
-    }
-}
-
-const boxeadores: Boxeador[]=[
-    new Rocky(),
-    new Apollo()
-
-]
-console.log(boxeadores)
-boxeadores.forEach(boxeador=>boxeador.atacar());
-
-class Guerrero {
-	atacar(): void {
-		console.log("El gerrero realiza un ataque basico");
-	}
-}
-
-class Goku extends Guerrero {
-	override atacar(): void{
-		console.log("Goku lanza un poderoso kamehamha");
-	}
-}
-
-class Vegeta extends Guerrero {
-	override atacar(): void{
-		console.log("Vegeta lanza un poderoso kamehamha");
-	}
-}
-  
-const guerreros: Guerrero[]=[
-    new Goku(),
-    new Vegeta()
-]
-console.log(guerreros)
-guerreros.forEach(guerrero=>guerrero.atacar());
+const cursoRN = new CursoEnVivo("React Native Practico", 50, 10);
+console.log(cursoRN.titulo);
+console.log(cursoRN.obtenerPrecioFinal());
+console.log(cursoRN.emitirCertificado("Victor"));

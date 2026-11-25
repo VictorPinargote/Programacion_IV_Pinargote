@@ -1,49 +1,29 @@
-class Boxeador {
-    golpear(): void {
-        console.log("Golpe Basico");
+interface Vendible {
+    readonly titulo: string;
+    obtenerPrecioFinal(): number;
+}
+
+interface Certificable {
+    emitirCertificado(estudiante: string): string;
+}
+
+class CursoEnVivo implements Vendible, Certificable {
+    constructor(
+        public readonly titulo: string,
+        private precioBase: number,
+        private cuposDisponibles: number
+    ) {}
+
+    obtenerPrecioFinal(): number {
+        return this.cuposDisponibles > 0 ? this.precioBase : 0;
+    }
+
+    emitirCertificado(estudiante: string): string {
+        return `Certificado emitido a ${estudiante} por completar ${this.titulo}`;
     }
 }
 
-class Rocky extends Boxeador {
-    golpeEspecial(): void {
-        console.log("Rocky lanza un poderoso gancho");
-    }
-}
-
-class Apollo extends Boxeador {
-    golpeRapido(): void {
-        console.log("Apollo lanza un jab veloz");
-    }
-}
-
-const rocky = new Rocky();
-rocky.golpear();
-rocky.golpeEspecial();
-const apolloCreek = new Apollo();
-apolloCreek.golpear();
-apolloCreek.golpeRapido();
-
-class Guerrero {
-    atacar(): void {
-        console.log("El gerrero realiza un ataque Basico");
-    }
-}
-
-class Goku extends Guerrero {
-    kamehameha(): void {
-        console.log("Goku lanza un poderoso kamehameha");
-    }
-}
-
-class Vegeta extends Guerrero {
-    finalFlash(): void {
-        console.log("Vegeta utliza su poderoso final flash");
-    }
-}
-
-const goku = new Goku();
-goku.atacar();
-goku.kamehameha();
-const vegeta = new Vegeta();
-vegeta.atacar();
-vegeta.finalFlash();
+const cursoRN = new CursoEnVivo("React Native Practico", 50, 10);
+console.log(cursoRN.titulo);
+console.log(cursoRN.obtenerPrecioFinal());
+console.log(cursoRN.emitirCertificado("Victor"));
