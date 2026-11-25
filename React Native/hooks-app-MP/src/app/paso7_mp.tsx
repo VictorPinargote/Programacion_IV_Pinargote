@@ -1,140 +1,150 @@
-import {
-  useState,
-  useCallback,
-  memo,
-} from 'react';
+import { createContext, useContext, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-
-import {
-  View,
-  Text,
-  Button,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
-
-
-interface Producto {
-  id: number;
-  nombre: string;
-  precio: number;
+interface CarritoContextType {
+    cursos: string[];
+    total: number;
+    agregarCurso: (nombre: string, precio: number) => void;
+    vaciarCarrito: () => void;
 }
 
+const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
 
-interface ProductoItemProps {
-  producto: Producto;
-  onEliminar: (id: number) => void;
-}
-
-
-// Componente memorizado
-const ProductoItem = memo(
-  ({ producto, onEliminar }: ProductoItemProps) => {
-    console.log('Renderizando:', producto.nombre);
-
+function ResumenCarrito() {
+    const context = useContext(CarritoContext);
+    if (!context) return null;
 
     return (
-      <View style={styles.producto}>
-        <Text>
-          {producto.nombre} - ${producto.precio}
-        </Text>
-
-
-        <Button
-          title="Eliminar"
-          onPress={() => onEliminar(producto.id)}
-        />
-      </View>
+        <View style={styles.caja}>
+            <Text style={styles.subtitulo}>Resumen desde Context</Text>
+            <Text style={styles.dato}>Cursos en carrito: {context.cursos.length}</Text>
+            <Text style={styles.total}>Total: ${context.total}</Text>
+            {context.cursos.map((curso, idx) => (
+                <Text key={idx} style={styles.item}>
+                    - {curso}
+                </Text>
+            ))}
+        </View>
     );
-  }
-);
-
-
-export default function Paso7() {
-  const [productos, setProductos] = useState<Producto[]>([
-    { id: 1, nombre: 'Teclado', precio: 25 },
-    { id: 2, nombre: 'Mouse', precio: 15 },
-  ]);
-
-
-  const [contador, setContador] = useState(0);
-
-
-  // Función memorizada para eliminar productos
-  const eliminarProducto = useCallback((id: number) => {
-    setProductos((actuales) =>
-      actuales.filter((producto) => producto.id !== id)
-    );
-  }, []);
-
-
-  // Función memorizada para agregar productos
-  const agregarProducto = useCallback(() => {
-    setProductos((actuales) => [
-      ...actuales,
-      {
-        id: Date.now(),
-        nombre: 'Monitor',
-        precio: 200,
-      },
-    ]);
-  }, []);
-
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>
-        Tienda de tecnología
-      </Text>
-
-
-      <Text>Contador: {contador}</Text>
-
-
-      <Button
-        title="Incrementar contador"
-        onPress={() => setContador((c) => c + 1)}
-      />
-
-
-      <Button
-        title="Agregar monitor"
-        onPress={agregarProducto}
-      />
-
-
-      <FlatList
-        data={productos}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <ProductoItem
-            producto={item}
-            onEliminar={eliminarProducto}
-          />
-        )}
-      />
-    </View>
-  );
 }
 
+function AccionesCursos() {
+    const context = useContext(CarritoContext);
+    if (!context) return null;
+
+    return (
+        <View style={styles.fila}>
+            <TouchableOpacity
+                style={styles.boton}
+                onPress={() => context.agregarCurso("React Native", 45)}
+            >
+                <Text style={styles.textoBtn}>+ React Native ($45)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.botonSecundario}
+                onPress={() => context.agregarCurso("Kotlin", 35)}
+            >
+                <Text style={styles.textoBtn}>+ Kotlin ($35)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.botonLimpiar}
+                onPress={context.vaciarCarrito}
+            >
+                <Text style={styles.textoBtn}>Vaciar</Text>
+            </TouchableOpacity>
+        </View>
+    );
+}
+
+export default function Paso6Hooks() {
+    const [cursos, setCursos] = useState<string[]>([]);
+    const [total, setTotal] = useState<number>(0);
+
+    const agregarCurso = (nombre: string, precio: number) => {
+        setCursos((prev) => [...prev, nombre]);
+        setTotal((prev) => prev + precio);
+    };
+
+    const vaciarCarrito = () => {
+        setCursos([]);
+        setTotal(0);
+    };
+
+    return (
+        <CarritoContext.Provider value={{ cursos, total, agregarCurso, vaciarCarrito }}>
+            <View style={styles.container}>
+                <Text style={styles.titulo}>Estado Global de Cursos - useContext</Text>
+                <AccionesCursos />
+                <ResumenCarrito />
+            </View>
+        </CarritoContext.Provider>
+    );
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 60,
-    gap: 12,
-  },
-  titulo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  producto: {
-    padding: 12,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    gap: 8,
-  },
+    container: {
+        backgroundColor: "#ffffff",
+        padding: 18,
+        borderRadius: 12,
+        gap: 12,
+    },
+    titulo: {
+        fontSize: 19,
+        fontWeight: "bold",
+        color: "#0f172a",
+    },
+    subtitulo: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#1e293b",
+        marginBottom: 4,
+    },
+    fila: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 8,
+    },
+    boton: {
+        backgroundColor: "#2563eb",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonSecundario: {
+        backgroundColor: "#0f766e",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonLimpiar: {
+        backgroundColor: "#dc2626",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    textoBtn: {
+        color: "#ffffff",
+        fontWeight: "bold",
+    },
+    caja: {
+        backgroundColor: "#f8fafc",
+        padding: 12,
+        borderRadius: 8,
+        gap: 4,
+    },
+    dato: {
+        fontSize: 15,
+        color: "#334155",
+    },
+    total: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#16a34a",
+    },
+    item: {
+        fontSize: 14,
+        color: "#475569",
+    },
 });

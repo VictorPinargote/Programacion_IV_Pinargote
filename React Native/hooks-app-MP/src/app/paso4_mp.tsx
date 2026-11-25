@@ -1,171 +1,110 @@
-import { StyleSheet, Text, useColorScheme, useWindowDimensions, View } from 'react-native'
+import { useState, useCallback } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export function Paso4_mp() {
-  const { width, height, scale } = useWindowDimensions()
-  const esquema = useColorScheme()   // 'light' | 'dark' | null
+export default function Paso4Hooks() {
+    const [cursosEnCarrito, setCursosEnCarrito] = useState<string[]>([]);
+    const [totalAcumulado, setTotalAcumulado] = useState<number>(0);
 
-  // Paleta dinámica según el tema del sistema
-  const colores = {
-    fondo:   esquema === 'dark' ? '#0d1b2a' : '#f5f5f5',
-    tarjeta: esquema === 'dark' ? '#1a2a3a' : '#ffffff',
-    texto:   esquema === 'dark' ? '#e8eaed' : '#1a1a1a',
-    detalle: esquema === 'dark' ? '#9aa0a6' : '#666666',
-    borde:   esquema === 'dark' ? '#2d3e50' : '#e0e0e0',
-  }
+    const agregarCurso = useCallback((nombreCurso: string, precio: number) => {
+        setCursosEnCarrito((prev) => [...prev, nombreCurso]);
+        setTotalAcumulado((prev) => prev + precio);
+    }, []);
 
-  // Layout adaptativo: 1 columna en pantallas angostas, 2 en anchas
-  const columnas = width > 500 ? 2 : 1
-  const anchoTarjeta = (width - 48 - (columnas - 1) * 12) / columnas
+    const limpiarCarrito = useCallback(() => {
+        setCursosEnCarrito([]);
+        setTotalAcumulado(0);
+    }, []);
 
-  const expedientes = [
-    { nombre: 'EXP-2026-001', delito: 'Robo agravado', estado: 'abierto' },
-    { nombre: 'EXP-2026-002', delito: 'Homicidio',     estado: 'abierto' },
-    { nombre: 'EXP-2026-003', delito: 'Secuestro',     estado: 'urgente' },
-    { nombre: 'EXP-2026-004', delito: 'Fraude',        estado: 'abierto' },
-  ]
+    return (
+        <View style={styles.container}>
+            <Text style={styles.titulo}>Carrito de Cursos - useCallback</Text>
+            <Text style={styles.dato}>Cursos agregados: {cursosEnCarrito.length}</Text>
+            <Text style={styles.total}>Total acumulado: ${totalAcumulado}</Text>
 
-  return (
-    <View style={[styles.contenedor, { backgroundColor: colores.fondo }]}>
-      <Text style={[styles.titulo, { color: colores.texto }]}>
-        Expedientes del inspector Hernan Varas
-      </Text>
+            <View style={styles.fila}>
+                <TouchableOpacity
+                    style={styles.boton}
+                    onPress={() => agregarCurso("React Native", 45)}
+                >
+                    <Text style={styles.textoBtn}>+ React Native ($45)</Text>
+                </TouchableOpacity>
 
-      {/* Información de pantalla */}
-      <View style={[styles.tarjeta, {
-        backgroundColor: colores.tarjeta,
-        borderColor: colores.borde,
-        width: '100%',
-      }]}>
-        <Text style={[styles.etiqueta, { color: colores.detalle }]}>
-          Pantalla: {Math.round(width)} × {Math.round(height)} dp
-          {'  '}·{'  '}escala: {scale.toFixed(1)}
-          {'  '}·{'  '}tema: {esquema ?? 'sin preferencia'}
-        </Text>
-      </View>
+                <TouchableOpacity
+                    style={styles.botonSecundario}
+                    onPress={() => agregarCurso("TypeScript", 30)}
+                >
+                    <Text style={styles.textoSecundario}>+ TypeScript ($30)</Text>
+                </TouchableOpacity>
+            </View>
 
-      {/* Grid de expedientes con columnas adaptativas */}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-        {expedientes.map(exp => (
-          <View
-            key={exp.nombre}
-            style={[styles.tarjeta, {
-              backgroundColor: colores.tarjeta,
-              borderColor: colores.borde,
-              width: anchoTarjeta,
-            }]}
-          >
-            <Text style={[styles.nombreServidor, { color: colores.texto }]}>
-              {exp.nombre}
-            </Text>
-            <Text style={[styles.ipServidor, { color: colores.detalle }]}>
-              {exp.delito}
-            </Text>
-            <Text style={{
-              fontSize: 12,
-              fontWeight: '600',
-              color: exp.estado === 'abierto' ? '#2e7d32' : '#c62828',
-            }}>
-              {exp.estado.toUpperCase()}
-            </Text>
-          </View>
-        ))}
-      </View>
+            <TouchableOpacity style={styles.botonLimpiar} onPress={limpiarCarrito}>
+                <Text style={styles.textoBtn}>Vaciar Carrito</Text>
+            </TouchableOpacity>
 
-      {/* Nota sobre useSafeAreaInsets */}
-      <View style={[styles.nota, { borderColor: colores.borde, backgroundColor: colores.tarjeta }]}>
-        <Text style={[styles.notaTexto, { color: colores.detalle }]}>
-          💡 useSafeAreaInsets() — disponible desde react-native-safe-area-context
-          (ya visto en Página 2 como SafeAreaView). El hook expone los valores
-          numéricos {'{'}top, bottom, left, right{'}'} para cuando necesitas
-          posicionar elementos manualmente respetando el notch y la barra de inicio.
-        </Text>
-      </View>
-    </View>
-  )
+            {cursosEnCarrito.map((item, idx) => (
+                <Text key={idx} style={styles.item}>
+                    - {item}
+                </Text>
+            ))}
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f5f5f5',
-  },
-  titulo: {
-    marginBottom: 20,
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  tarjeta: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
-
-  etiqueta: {
-    marginBottom: 12,
-    fontWeight: 'bold',
-    color: '#757575',
-    fontSize: 13
-  },
-  nota: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-    marginTop: 12,
-  },
-  input: {
-    marginBottom: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  notaTexto: {
-    fontSize: 12,
-  },
-  ciclos: {
-    marginBottom: 8,
-    fontSize: 14,
-  },
-  detalle: {
-
-  },
-  boton: {
-    alignItems: 'center',
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 8,
-  },
-  botonActivo: {
-    backgroundColor: '#2e7d32',
-  },
-  botonDetener: {
-    backgroundColor: '#c62828',
-  },
-  textoBoton: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  nombreServidor: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  ipServidor: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  formulario: {
-    padding: 14
-  }
-})
+    container: {
+        backgroundColor: "#ffffff",
+        padding: 18,
+        borderRadius: 12,
+        gap: 10,
+    },
+    titulo: {
+        fontSize: 19,
+        fontWeight: "bold",
+        color: "#0f172a",
+    },
+    dato: {
+        fontSize: 15,
+        color: "#334155",
+    },
+    total: {
+        fontSize: 17,
+        fontWeight: "bold",
+        color: "#16a34a",
+    },
+    fila: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 8,
+    },
+    boton: {
+        backgroundColor: "#2563eb",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonSecundario: {
+        backgroundColor: "#0f766e",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonLimpiar: {
+        backgroundColor: "#dc2626",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    textoBtn: {
+        color: "#ffffff",
+        fontWeight: "bold",
+    },
+    textoSecundario: {
+        color: "#ffffff",
+        fontWeight: "bold",
+    },
+    item: {
+        fontSize: 14,
+        color: "#475569",
+    },
+});

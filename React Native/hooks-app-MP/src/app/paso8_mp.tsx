@@ -1,185 +1,185 @@
-// app/index.tsx — agrega la función Paso5
-// (en un proyecto real importarías desde '@/hooks/useConexionSimulada')
-import { useConexionSimulada } from '@/hooks/useConexionSimulada'
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { useState, useReducer } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-// Para este tutorial pegamos el hook inline arriba del componente:
-// (copia aquí el código del archivo hooks/useConexionSimulada.ts)
-
-export function Paso8() {
-  const webHook   = useConexionSimulada('web-02')
-  const cacheHook = useConexionSimulada('cache-02')
-
-  return (
-    <View style={styles.contenedor}>
-      <Text style={styles.titulo}>Estado de Servicios</Text>
-
-      <TarjetaServidor nombre="web-02" hook={webHook} />
-      <TarjetaServidor nombre="cache-02" hook={cacheHook} />
-    </View>
-  )
+interface EstadoVenta {
+    saldo: number;
+    cursosComprados: string[];
 }
 
-interface PropsTarjeta {
-  nombre: string
-  hook: ReturnType<typeof useConexionSimulada>
+type AccionVenta =
+    | { type: "COMPRAR"; curso: string; precio: number }
+    | { type: "RECARGAR"; monto: number }
+    | { type: "REINICIAR" };
+
+function ventaReducer(estado: EstadoVenta, accion: AccionVenta): EstadoVenta {
+    switch (accion.type) {
+        case "COMPRAR":
+            if (estado.saldo < accion.precio || estado.cursosComprados.includes(accion.curso)) {
+                return estado;
+            }
+            return {
+                saldo: estado.saldo - accion.precio,
+                cursosComprados: [...estado.cursosComprados, accion.curso],
+            };
+        case "RECARGAR":
+            return {
+                ...estado,
+                saldo: estado.saldo + accion.monto,
+            };
+        case "REINICIAR":
+            return {
+                saldo: 100,
+                cursosComprados: [],
+            };
+        default:
+            return estado;
+    }
 }
 
-function TarjetaServidor({ nombre, hook }: PropsTarjeta) {
-  const { estado, intentos, latencia, reconectar, reiniciar } = hook
+export default function Paso8Hooks() {
+    const [estado, dispatch] = useReducer(ventaReducer, {
+        saldo: 100,
+        cursosComprados: [],
+    });
+    const [ultimoAviso, setUltimoAviso] = useState<string>("Listo para comprar");
 
-  const colorEstado: Record<string, string> = {
-    desconectado: '#757575',
-    conectando:   '#1565c0',
-    conectado:    '#2e7d32',
-    error:        '#c62828',
-  }
+    const manejarCompra = (curso: string, precio: number) => {
+        if (estado.cursosComprados.includes(curso)) {
+            setUltimoAviso(`Ya compraste ${curso}`);
+            return;
+        }
+        if (estado.saldo < precio) {
+            setUltimoAviso(`Saldo insuficiente para ${curso}`);
+            return;
+        }
+        dispatch({ type: "COMPRAR", curso, precio });
+        setUltimoAviso(`Compraste ${curso} por $${precio}`);
+    };
 
-  const textoBoton: Record<string, string> = {
-    desconectado: 'Conectar',
-    conectando:   'Conectando…',
-    conectado:    'Reconectar',
-    error:        'Reintentar',
-  }
+    const manejarRecarga = (monto: number) => {
+        dispatch({ type: "RECARGAR", monto });
+        setUltimoAviso(`Recargaste $${monto}`);
+    };
 
-  return (
-    <View style={[styles.tarjeta, { borderColor: colorEstado[estado], width: '100%' }]}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={styles.nombreServidor}>{nombre}</Text>
-        <Text style={[styles.etiqueta, { color: colorEstado[estado] }]}>
-          {estado.toUpperCase()}
-        </Text>
-      </View>
+    const manejarReinicio = () => {
+        dispatch({ type: "REINICIAR" });
+        setUltimoAviso("Estado reiniciado");
+    };
 
-      <Text style={styles.detalle}>
-        Intentos: {intentos}
-        {latencia !== null ? `  ·  Latencia: ${latencia} ms` : ''}
-      </Text>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.titulo}>Estado de Venta Complejo - useReducer</Text>
+            <Text style={styles.saldo}>Saldo: ${estado.saldo}</Text>
+            <Text style={styles.aviso}>{ultimoAviso}</Text>
 
-      <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.boton,
-            styles.botonActivo,
-            estado === 'conectando' && styles.botonDeshabilitado,
-            pressed && { opacity: 0.75 },
-            { flex: 1 },
-          ]}
-          onPress={reconectar}
-          disabled={estado === 'conectando'}
-        >
-          <Text style={styles.textoBoton}>{textoBoton[estado]}</Text>
-        </Pressable>
+            <View style={styles.fila}>
+                <TouchableOpacity
+                    style={styles.boton}
+                    onPress={() => manejarCompra("React Native", 45)}
+                >
+                    <Text style={styles.textoBtn}>Comprar RN ($45)</Text>
+                </TouchableOpacity>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.botonSecundario,
-            pressed && { opacity: 0.75 },
-            { paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#1565c0', justifyContent: 'center' },
-          ]}
-          onPress={reiniciar}
-        >
-          <Text style={[styles.textoSecundario, { fontSize: 13 }]}>Reiniciar</Text>
-        </Pressable>
-      </View>
-    </View>
-  )
+                <TouchableOpacity
+                    style={styles.botonSecundario}
+                    onPress={() => manejarCompra("TypeScript", 30)}
+                >
+                    <Text style={styles.textoBtn}>Comprar TS ($30)</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.fila}>
+                <TouchableOpacity
+                    style={styles.botonRecarga}
+                    onPress={() => manejarRecarga(50)}
+                >
+                    <Text style={styles.textoBtn}>Recargar +$50</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.botonReiniciar}
+                    onPress={manejarReinicio}
+                >
+                    <Text style={styles.textoOscuro}>Reiniciar</Text>
+                </TouchableOpacity>
+            </View>
+
+            <Text style={styles.subtitulo}>Cursos comprados ({estado.cursosComprados.length}):</Text>
+            {estado.cursosComprados.map((c, i) => (
+                <Text key={i} style={styles.item}>
+                    - {c}
+                </Text>
+            ))}
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f5f5f5',
-  },
-  titulo: {
-    marginBottom: 20,
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  tarjeta: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
-  
-  etiqueta: {
-    marginBottom: 12,
-    fontWeight: 'bold',
-    color: '#757575',
-    fontSize: 13
-  },
-   detalle: {
-    alignItems: 'center',
-    padding: 24,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    elevation: 2,
-   }, 
-  input: {
-    marginBottom: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  notaTexto: {
-    marginBottom: 10,
-    fontSize: 36,
-    fontWeight: 'bold',
-  },
-  textoBoton: {
-    marginBottom: 10,
-    fontSize: 36,
-    fontWeight: 'bold',
-  },
-  ciclos: {
-    marginBottom: 8,
-    fontSize: 14,
-  },
-  botonDeshabilitado: {
-    alignItems: 'center',
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 8,
-  },
-  botonActivo: {
-    alignItems: 'center',
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 8,
-  },
-  boton: {
-    backgroundColor: '#2e7d32',
-  },
-  botonDetener: {
-    backgroundColor: '#c62828',
-  },
-  botonSecundario: {
-    backgroundColor: '#4cb3ad',
-  },
-  textoSecundario: {
-    color: '#381818',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  nombreServidor: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  ipServidor: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  formulario: {
-    padding:14
-  }
-})
+    container: {
+        backgroundColor: "#ffffff",
+        padding: 18,
+        borderRadius: 12,
+        gap: 10,
+    },
+    titulo: {
+        fontSize: 19,
+        fontWeight: "bold",
+        color: "#0f172a",
+    },
+    saldo: {
+        fontSize: 17,
+        fontWeight: "bold",
+        color: "#16a34a",
+    },
+    aviso: {
+        fontSize: 14,
+        color: "#475569",
+    },
+    fila: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 8,
+    },
+    boton: {
+        backgroundColor: "#2563eb",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonSecundario: {
+        backgroundColor: "#0f766e",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonRecarga: {
+        backgroundColor: "#16a34a",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    botonReiniciar: {
+        backgroundColor: "#e2e8f0",
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+    },
+    textoBtn: {
+        color: "#ffffff",
+        fontWeight: "bold",
+    },
+    textoOscuro: {
+        color: "#1e293b",
+        fontWeight: "bold",
+    },
+    subtitulo: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "#0f172a",
+        marginTop: 4,
+    },
+    item: {
+        fontSize: 14,
+        color: "#334155",
+    },
+});
