@@ -1,32 +1,29 @@
-class Boxeador {
+interface Vendible {
+    readonly titulo: string;
+    obtenerPrecioFinal(): number;
+}
+
+interface Certificable {
+    emitirCertificado(estudiante: string): string;
+}
+
+class CursoEnVivo implements Vendible, Certificable {
     constructor(
-        public nombre: string,
-        public fuerza: number,
-        public energia: number,
-    ){
-        this.nombre = nombre;
-        this.fuerza = fuerza;
-        this. energia = energia;
-    }
-    golpear():void{
-        this.energia-=5
-        console.log(`${this.nombre} lanza un golpe`)
+        public readonly titulo: string,
+        private precioBase: number,
+        private cuposDisponibles: number
+    ) {}
+
+    obtenerPrecioFinal(): number {
+        return this.cuposDisponibles > 0 ? this.precioBase : 0;
     }
 
-    entrenar(): void{
-        this.fuerza+=10;
-        console.log(`${this.nombre} ha entrenado`)
+    emitirCertificado(estudiante: string): string {
+        return `Certificado emitido a ${estudiante} por completar ${this.titulo}`;
     }
 }
 
-const rocky = new Boxeador("Rocky Balboa", 80, 100);
-const apollo = new Boxeador("Apollo Creed", 90, 100);
-
-rocky.golpear();
-console.log(apollo.fuerza);
-apollo.entrenar();
-apollo.entrenar();
-console.log(apollo.fuerza);
-apollo.golpear();
-apollo.golpear();
-console.log(apollo.energia);
+const cursoRN = new CursoEnVivo("React Native Practico", 50, 10);
+console.log(cursoRN.titulo);
+console.log(cursoRN.obtenerPrecioFinal());
+console.log(cursoRN.emitirCertificado("Victor"));
