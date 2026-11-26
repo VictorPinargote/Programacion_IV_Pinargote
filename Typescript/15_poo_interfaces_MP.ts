@@ -8,11 +8,15 @@ interface Certificable {
 }
 
 class CursoEnVivo implements Vendible, Certificable {
-    constructor(
-        public readonly titulo: string,
-        private precioBase: number,
-        private cuposDisponibles: number
-    ) {}
+    readonly titulo: string;
+    private precioBase: number;
+    private cuposDisponibles: number;
+
+    constructor(titulo: string, precioBase: number, cuposDisponibles: number) {
+        this.titulo = titulo;
+        this.precioBase = precioBase;
+        this.cuposDisponibles = cuposDisponibles;
+    }
 
     obtenerPrecioFinal(): number {
         return this.cuposDisponibles > 0 ? this.precioBase : 0;

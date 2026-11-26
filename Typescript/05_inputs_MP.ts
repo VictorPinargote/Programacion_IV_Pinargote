@@ -1,13 +1,16 @@
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+
+const rl = createInterface({ input, output });
+
 console.log("--- TIENDA DE CURSOS ONLINE ---");
 
-// Pedimos datos al usuario con prompt (nivel estudiante)
-let nombreEstudiante: string | null = prompt("¿Cuál es tu nombre?");
-let opcionElegida: string | null = prompt("Ingresa el número del curso que deseas comprar (1. Lógica, 2. Web, 3. Datos): ");
+const nombreEstudiante = await rl.question("¿Cuál es tu nombre? ");
+const opcionElegida = await rl.question("Ingresa el número del curso que deseas comprar (1. Lógica, 2. Web, 3. Datos): ");
 
 console.log("Estudiante: ", nombreEstudiante);
 
-// Usamos el switch pero simplificado
-switch (opcionElegida) {
+switch (opcionElegida.trim()) {
     case "1":
         console.log("¡Felicidades! Compraste el curso de Lógica.");
         break;
@@ -21,3 +24,5 @@ switch (opcionElegida) {
         console.log("Error: Ese número de curso no existe.");
         break;
 }
+
+rl.close();

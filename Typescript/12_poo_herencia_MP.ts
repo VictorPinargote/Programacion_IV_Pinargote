@@ -1,29 +1,47 @@
-interface Vendible {
-    readonly titulo: string;
-    obtenerPrecioFinal(): number;
-}
+class Curso {
+    public titulo: string;
+    public precio: number;
 
-interface Certificable {
-    emitirCertificado(estudiante: string): string;
-}
-
-class CursoEnVivo implements Vendible, Certificable {
-    constructor(
-        public readonly titulo: string,
-        private precioBase: number,
-        private cuposDisponibles: number
-    ) {}
-
-    obtenerPrecioFinal(): number {
-        return this.cuposDisponibles > 0 ? this.precioBase : 0;
+    constructor(titulo: string, precio: number) {
+        this.titulo = titulo;
+        this.precio = precio;
     }
 
-    emitirCertificado(estudiante: string): string {
-        return `Certificado emitido a ${estudiante} por completar ${this.titulo}`;
+    public mostrarResumen(): void {
+        console.log("Curso: " + this.titulo + " | Precio base: $" + this.precio);
     }
 }
 
-const cursoRN = new CursoEnVivo("React Native Practico", 50, 10);
-console.log(cursoRN.titulo);
-console.log(cursoRN.obtenerPrecioFinal());
-console.log(cursoRN.emitirCertificado("Victor"));
+class CursoGrabado extends Curso {
+    public horasVideo: number;
+
+    constructor(titulo: string, precio: number, horasVideo: number) {
+        super(titulo, precio);
+        this.horasVideo = horasVideo;
+    }
+
+    public verDuracion(): void {
+        console.log(this.titulo + " tiene " + this.horasVideo + " horas de video grabadas.");
+    }
+}
+
+class CursoEnVivo extends Curso {
+    public horario: string;
+
+    constructor(titulo: string, precio: number, horario: string) {
+        super(titulo, precio);
+        this.horario = horario;
+    }
+
+    public verHorario(): void {
+        console.log(this.titulo + " se dicta en vivo: " + this.horario);
+    }
+}
+
+const curso1 = new CursoGrabado("Logica de Programacion", 25, 12);
+curso1.mostrarResumen();
+curso1.verDuracion();
+
+const curso2 = new CursoEnVivo("React Native", 45, "Sabados 09:00");
+curso2.mostrarResumen();
+curso2.verHorario();
